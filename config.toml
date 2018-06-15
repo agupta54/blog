@@ -1,0 +1,29 @@
+baseURL = "http://example.org/"
+languageCode = "en-us"
+title = "Looking through the lens of mathmatics"
+theme = "mainroad"
+disqusShortname = "disqus_l5sqC5oLSM"
+
+[Author]
+    name = "Anirudh Gupta"
+
+[Params]
+    subtitle = "Anirudh Gupta"
+    description = "Anirudh Gupta's blog about everything"
+    opengraph = true
+    twitter_cards = true
+    readmore = false
+    leftsidebar = false
+    authorbox = false 
+    post_navigation = true 
+    poseSections = ["post"]
+
+[Params.widgets]
+    search = true 
+    recent_articles = true 
+    recent_articles_num = 5
+    categories = true 
+    tags = true 
+    tags_counter = false 
+    social_twitter = "anirudh_gupta12"
+    

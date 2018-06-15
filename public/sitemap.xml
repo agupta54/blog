@@ -3,47 +3,47 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://example.org/post/bayes/</loc>
+    <loc>https://agupta54.github.io/post/bayes/</loc>
     <lastmod>2018-06-12T23:06:42+05:30</lastmod>
   </url>
   
   <url>
-    <loc>http://example.org/categories/</loc>
+    <loc>https://agupta54.github.io/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://example.org/tags/classification/</loc>
-    <lastmod>2018-06-12T23:06:42+05:30</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.org/</loc>
+    <loc>https://agupta54.github.io/tags/classification/</loc>
     <lastmod>2018-06-12T23:06:42+05:30</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://example.org/categories/machine-learning/</loc>
+    <loc>https://agupta54.github.io/categories/machine-learning/</loc>
     <lastmod>2018-06-12T23:06:42+05:30</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://example.org/post/</loc>
+    <loc>https://agupta54.github.io/post/</loc>
     <lastmod>2018-06-12T23:06:42+05:30</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://example.org/tags/statistics/</loc>
+    <loc>https://agupta54.github.io/tags/statistics/</loc>
     <lastmod>2018-06-12T23:06:42+05:30</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://example.org/tags/</loc>
+    <loc>https://agupta54.github.io/tags/</loc>
+    <lastmod>2018-06-12T23:06:42+05:30</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://agupta54.github.io/</loc>
     <lastmod>2018-06-12T23:06:42+05:30</lastmod>
     <priority>0</priority>
   </url>

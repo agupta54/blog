@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Demystifying Bayes&#39; Decision Rule</title>
+	<meta name="description" content="">
+	<meta name="generator" content="Hugo 0.41" />
+	<meta property="og:title" content="Demystifying Bayes&#39; Decision Rule" />
+<meta property="og:description" content="Bayesian decision theory is a fundamental statistical approach to solve classification problems. It relies on prior probabilities and class conditional densities to reach a decision. Often it is stated that Bayes classifier is the most optimum among all classifiers and it has the least error. In simple terms it aims to minimize the probability of error in classification problems.
+One should also think that if in fact Bayes&rsquo; classifier is the best classifier for any classification problem, why do we need other classification methods in the first place!" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/post/bayes/" />
+
+
+
+<meta property="article:published_time" content="2018-06-12T23:06:42&#43;05:30"/>
+
+<meta property="article:modified_time" content="2018-06-12T23:06:42&#43;05:30"/>
+
+
+
+
+
+
+
+
+
+
+
+	<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Demystifying Bayes&#39; Decision Rule"/>
+<meta name="twitter:description" content="Bayesian decision theory is a fundamental statistical approach to solve classification problems. It relies on prior probabilities and class conditional densities to reach a decision. Often it is stated that Bayes classifier is the most optimum among all classifiers and it has the least error. In simple terms it aims to minimize the probability of error in classification problems.
+One should also think that if in fact Bayes&rsquo; classifier is the best classifier for any classification problem, why do we need other classification methods in the first place!"/>
+
+	<link rel="dns-prefetch" href="//fonts.googleapis.com">
+	<link rel="dns-prefetch" href="//fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700">
+	<link rel="stylesheet" href="/css/style.css">
+	<script type="text/javascript" src="/js/scripts.js"></script>
+	<link rel="shortcut icon" href="/favicon.ico">
+	
+	<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$']],
+    processEscapes: true,
+    processEnvironments: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+    TeX: { equationNumbers: { autoNumber: "AMS" },
+         extensions: ["AMSmath.js", "AMSsymbols.js"] }
+  }
+  });
+  MathJax.Hub.Queue(function() {
+    
+    
+    
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+
+  MathJax.Hub.Config({
+  
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+  });
+</script>
+</head>
+<body class="body body-right-sidebar">
+	<div class="container container-outer">
+		<header class="header">
+			<div class="container container-inner">
+				<div class="logo" role="banner">
+					<a class="logo__link" href="/" title="Looking through the lens of mathmatics" rel="home">
+						<div class="logo__title">Looking through the lens of mathmatics</div>
+						<div class="logo__tagline">Anirudh Gupta</div>
+					</a>
+				</div>
+			</div>
+			<div class="divider"></div>
+		</header>
+		<div class="wrapper clearfix">
+
+<main class="main content">
+	<article class="post">
+		<header class="post__header">
+			<h1 class="post__title">Demystifying Bayes&#39; Decision Rule</h1><div class="post__meta meta">
+<svg class="icon icon-time" width="16" height="14" viewBox="0 0 16 16"><path d="m8-.0000003c-4.4 0-8 3.6-8 8 0 4.4000003 3.6 8.0000003 8 8.0000003 4.4 0 8-3.6 8-8.0000003 0-4.4-3.6-8-8-8zm0 14.4000003c-3.52 0-6.4-2.88-6.4-6.4000003 0-3.52 2.88-6.4 6.4-6.4 3.52 0 6.4 2.88 6.4 6.4 0 3.5200003-2.88 6.4000003-6.4 6.4000003zm.4-10.4000003h-1.2v4.8l4.16 2.5600003.64-1.04-3.6-2.1600003z"/></svg>
+<time class="post__meta-date meta-date" datetime="2018-06-12T23:06:42">June 12, 2018</time>
+<span class="post__meta-categories meta-categories">
+	<svg class="icon icon-category" width="16" height="16" viewBox="0 0 16 16"><path d="m7 2l1 2h8v11h-16v-13z"/></svg>
+	<span class="meta-categories__list"><a class="meta-categories__link" href="/categories/machine-learning" rel="category">machine learning</a></span>
+</span></div>
+		</header>
+		<div class="post__content clearfix">
+			<p>Bayesian decision theory is a fundamental statistical approach to solve classification problems. It relies on prior probabilities and class conditional densities to reach a decision. Often it is stated that Bayes classifier is the most <em>optimum</em> among all classifiers and it has the least <em>error</em>. In simple terms it aims to minimize the probability of error in classification problems.</p>
+
+<p>One should also think that if in fact Bayes&rsquo; classifier is the best classifier for any classification problem, why do we need other classification methods in the first place! Also, how do we define &ldquo;best&rdquo;? To answer all these questions we need to get a little rigorous and see how Bayes&rsquo; theorem is build up from the first principles. It is important to understand these things before blindly applying in my opinion otherwise things can get very nasty in a very short span of time when dealing with complex problems.</p>
+
+<p>Since I don&rsquo;t wan&rsquo;t the generalizations to obscure the central points, I will consider a case of only two classes and one feature. Let $\Omega \in \Re^d$ be our sample space which is the set of all possible features in a $d$ dimensional Eucledian space. $d$ is the number of features and in our case $d = 1$. And let that feature be denoted by $x \in \Re$. We are only concerned about two classes as of now, so we partition our space into two sets $\Omega_1$ and $\Omega_2$. Since these two sets are partitions of the sample space they have the following properties:</p>
+
+<ul>
+<li>$\Omega_1 \cup \Omega_2 = \Omega$</li>
+<li>$\Omega_1 \cap \Omega_2 = \phi$</li>
+<li>$\Omega_1 \ne \phi$ and $\Omega_2 \ne \phi$</li>
+</ul>
+
+<p>We also define a decision $D(\Omega_1, \Omega_2)$:</p>
+
+<ul>
+<li>$x \in \Omega_1 \Longrightarrow x$ is in class 1</li>
+<li>$x \in \Omega_2 \Longrightarrow x$ is in class 2</li>
+</ul>
+
+<p>It is important to note that the decision $D$ is not symmetric according to our definition. Before things get out of hand lets give some context to our abstractions.<br />
+Suppose in a room there are 30% males and 70% females. We have no other information at this point. If we pick a random person from the room there is a 70% chance that it is a female rather than a male. If we want to design a classifier based on this information alone, the most obvious choice would be to always assign the class with higher probability. So far so good, but this classifier will only give us one output, i.e. always classify as a female. So it will be wrong 30% of the times since that is the probability of picking a male.To formalize our discussion lets call the two classes as $\omega_1$ and $\omega_2$. We have information about $P(\omega_1)$ and $P(\omega_2)$. In our case $P(\omega_1) = 0.3$ and $P(\omega_2) = 0.7$. These probabilities of individual classes are also known as prior probabilities. Also, $P(\omega_1) + P(\omega_2) = 1$. A classifier based on this information will always classify a sample in class $\omega_2$. So probability of error in this case is equal to $P(\omega_1)$, since error occurs when our sample is in $\omega_1$, but is classified as $\omega_2$.</p>
+
+<p>If in addition to the class priors we also have the knowledge of class conditional distributions over some variable, we can <em>probably</em> improve our decision. In our case lets say that we also know the probability density function of height for males and for females ($P$(height|male) and $P$(height|female)). Here height becomes our only feature $x$. Class conditional densities are thus represented by $p(x|\omega_1)$ and $p(x|\omega_2)$, i.e, given a class what is probability of observing the feature. (We generally use an upper case $P(\cdot)$ to denote a probability mass function and a lower case $p(\cdot)$ to denote a probability density function).</p>
+
+<p>Let us return to our problem again and we randomly pick a person from the room. But this time we also give the height of the person. How should we classify the person now? The question is how do we use this additional information to design a <em>better</em> classifier. It all boils down to reducing the probability of error. Intutively one can think that what we need is $P(\omega_i|x)$ to make a decision, i.e., the probability of observing male or female given a height. It turns out in fact that this is the best way to deal with the problem. Let’s see <em>how</em>!</p>
+
+<p>We construct what I call an error table -</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>$x$ classified as class 1</th>
+<th>$x$ classified as class 2</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>$x$ <strong>actually in class 1</strong></td>
+<td>No Error</td>
+<td>$\mathcal{E}_1$</td>
+</tr>
+
+<tr>
+<td>$x$ <strong>actually in class 2</strong></td>
+<td>$\mathcal{E}_2$</td>
+<td>No Error</td>
+</tr>
+</tbody>
+</table>
+
+<p>If $x$ is actually in class 1 and is also classified as class 1 according to our decision rule, then there is no error incurred. Similarly for class 2. But if $x$ is in class 1 but classified as class 2 or vice versa, there is some error.(How many error terms will be there if we have $n$ classes?) We already introduced the partition of our sample space and the decision $D(\Omega_1, \Omega_2)$.</p>
+
+<p>$\mathcal{E}_1$ = probability of error when $x$ is classified as class 2 but is actually in class 1<br />
+     = probability of error when $x \in \Omega_2$ but is actually in class 1 (decision is incorrect)<br />
+     = $P(x \in \Omega_2 | \omega_1) P(\omega_1)$<br />
+     = $P(\omega_1) \int_{\Omega_2} p(x|\omega_1)dx$</p>
+
+<p>There is a more intutive way to think about the probability of error. In the previous case when we had no information about the class conditionals, the probability of error was $P(\omega_1)$ (if $P(\omega_2)&gt;P(\omega_1)$). Now we have more information about our classes and we need to update the probability of error. In the image below two class conditional distributions are shown. Lets say that we have partitioned our domain into $\Omega_1$ and $\Omega_2$ for our decision, i.e. $x \in \Omega_1 \Longrightarrow x \in \omega_1$ and vice versa for class 2.The integration of $p(x|\omega_1)$ over all $x$ which lies in partition $\Omega_2$ gives the probability of error when the sample is classfied as class 2 but is actually in 1.</p>
+
+<!--![This is an image](/bayes.png) -->
+
+<figure>
+  <img src="/bayes.png" alt="This is an image" title="Class conditional densities">
+  <center>
+  <figcaption>Fig: Class conditional densities for two classes</figcaption></center>
+</figure>
+
+<p>Similarly, $\mathcal{E}_2 = P(\omega_2) \int_{\Omega_1} p(x|\omega_2)dx$.  If the definitions of the error terms is clear, then rest is just a trivial calculation. It should also be noted that we are just concerned about the probability of misclassification and not about the <em>cost</em> of misclassification at this point.</p>
+
+<p>Define $\mathcal{E}(\Omega_1, \Omega_2) = \mathcal{E}_1 + \mathcal{E}_2$</p>
+
+<p>Let $\mathcal{D} = { D(\Omega_1, \Omega_2) }$ be the set of all possible decisions. Then our classification problem is reduced to finding $D(\Omega_1^o, \Omega_2^o)$:
+$\mathcal{E}(\Omega_1^o, \Omega_2^o) \le \mathcal{E}(\Omega_1,\Omega_2) \forall D(\Omega_1, \Omega_2) \in \mathcal{D}$.<br />
+Then $D(\Omega_1^o, \Omega_2^o)$ is the <strong>optimal</strong> decision rule.</p>
+
+<p>$\mathcal{E}(\Omega_1, \Omega_2) = P(\omega_1) \int_{\Omega_2} p(x|\omega_1)dx + P(\omega_2) \int_{\Omega_1}p(x|\omega_2)dx$<br />
+$ = P(\omega_1) \int_{\Omega_2} p(x|\omega_1)dx + P(\omega_2) \int_{\Omega_1} p(x| \omega_2)dx + P(\omega_1) \int_{\Omega_1} p(x|\omega_1)dx - P(\omega_1) \int_{\Omega_1} p(x|\omega_1)dx$<br />
+$ = P(\omega_1) \int_{\Omega_1 \cup \Omega_2} p(x|\omega_1)dx + \int_{\Omega_1} P(\omega_2)p(x|\omega_2) - P(\omega_1)p(x|\omega_1)dx$<br />
+$ = P(\omega_1) + \int_{\Omega_1} P(\omega_2) p(x|\omega_2) - P(\omega_1) p(x|\omega_1)dx$</p>
+
+<p>Similarly, if we add and subtract $P(\omega_2) \int_{\Omega_2} p(x|\omega_2)dx$ from $\mathcal{E}(\Omega_1,\Omega_2)$, we end up with -
+$\mathcal{E}(\Omega_1, \Omega_2) = P(\omega_2) + \int_{\Omega_2} P(\omega_1)p(x|\omega_1) - P(\omega_2)p(x|\omega_2)dx$</p>
+
+<p>Adding both errors we get -</p>
+
+<p>$\mathcal{E}(\Omega_1, \Omega_2) = 1 + \int_{\Omega_1} P(\omega_2) p(x|\omega_2) - P(\omega_1) p(x|\omega_1) dx + \int_{\Omega_2} P(\omega_1) p(x|\omega_1) - P(\omega_2) p(x|\omega_2) dx$</p>
+
+<p>A factor of half has no effect on the minimization problem. If we want to minimize this error we need to minimize both the integrals on the right hand side of the equation. If both integrals are integrating over negative quantities, the error achieved will be the minimum.</p>
+
+<p>Let $c_1 = \{x: P(\omega_1)p(x|\omega_1) &gt; P(\omega_2)p(x|\omega_2)\}$</p>
+
+<p>$c_2 = \{ x: P(\omega_1)p(x|\omega_1) = P(\omega_2)p(x|\omega_2)\}$</p>
+
+<p>$c_3 = \{ x: P(\omega_1)p(x|\omega_1) &lt; P(\omega_2)p(x|\omega_2) \}$</p>
+
+<p>Partitioning our sample space again in sets $c_1$, $c_2$ and $c_3$ helps us in making the choice to find the optimum partitions $\Omega_1^o$ and $\Omega_2^o$. To minimize the first integral over the domain $\Omega_1$ we should integrate where $x \in c_1$ and to minimize the integral over the domain $\Omega_2$ we should integrate where $x \in c_3$. This gives us -</p>
+
+<p>$\Omega_1^o = c_1 \cup c_2$ and,</p>
+
+<p>$\Omega_2^o = c_3$</p>
+
+<p>$c_2$ can be taken in union with any of the sets since its addition does not affect the minimization problem. According to our decision $D(\Omega_1^o, \Omega_2^o)$ if $x \in c_1 \cup c_2$ $\Longrightarrow x \in \omega_1$. Using some basic rules of conditional probability -</p>
+
+<p>$ P(\omega_1|x) = \dfrac{P(\omega_1)p(x|\omega_1)}{p(x)}$</p>
+
+<p>$P(\omega_2|x) = \dfrac{P(\omega_2)p(x|\omega_2)}{p(x)} $</p>
+
+<p>where $P(\omega_1|x)$ and $P(\omega_2|x)$ are known as posterior probabilities. $p(x)$ acts as the normalization factor in both the fractions. Which brings us to the usual  text book version of Bayes&rsquo; rule that -</p>
+
+<ul>
+<li><p>$x \in \omega_1$ if $ P(\omega_1|x) &gt; P(\omega_2|x)$</p></li>
+
+<li><p>$x \in \omega_2$ if $P(\omega_2|x) &gt; P(\omega_1|x)$</p></li>
+</ul>
+
+<p>To reach to this decision rule we didn&rsquo;t impose any conditions on the sample space or take any assumptions. Thus no other partitioning can yield a smaller probability of error.</p>
+
+<p>If Bayes&rsquo; rule is as good as we claim, why don&rsquo;t we solve every classification problem by this rule? The answer lies in the details. Usually a classification problem consists of a training set and its associated labels. If we have $n$ samples then $\{X_i, y_i\}_{i=1}^{n}$ constitutes the training set where $X _i\in \Re^d$ and $y_i \in \Re$. We can easily calculate the prior probabilities of each class but usually the conditional densities $p(X|\omega_i)$ are not known. There is a huge amount of literature which deals with density estimation and making assumptions about class conditionals but that is beyond our scope. It can also become very difficult to calculate errors if the number of features increase since we need to calculate error integrals over complicated d-dimensional domains to estimate the efficiency of our estimator.</p>
+
+<p>If someone wants to dwell into more details, similar arguments are presented in an excellent book on pattern recognition by <a href="https://www.sciencedirect.com/science/book/9780080478654">Fukunaga</a>. There&rsquo;s also another blog post by <a href="https://brohrer.github.io/how_bayesian_inference_works.html">Brandon Rohrer</a> which deals with more practical aspects of Bayesian inference.</p>
+
+		</div>
+		
+<div class="post__tags tags clearfix">
+	<svg class="icon icon-tag" width="16" height="16" viewBox="0 0 16 16"><path d="M16 9.5c0 .373-.24.74-.5 1l-5 5c-.275.26-.634.5-1 .5-.373 0-.74-.24-1-.5L1 8a2.853 2.853 0 0 1-.7-1C.113 6.55 0 5.973 0 5.6V1.4C0 1.034.134.669.401.401.67.134 1.034 0 1.4 0h4.2c.373 0 .95.113 1.4.3.45.187.732.432 1 .7l7.5 7.502c.26.274.5.632.5.998zM3.5 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
+	<ul class="tags__list">
+		<li class="tags__item"><a class="tags__link btn" href="/tags/statistics/" rel="tag">statistics</a></li>
+		<li class="tags__item"><a class="tags__link btn" href="/tags/classification/" rel="tag">classification</a></li>
+	</ul>
+</div>
+	</article>
+	
+	
+	
+<section class="comments">
+	<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "disqus_l5sqC5oLSM" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+</main>
+
+<aside class="sidebar">
+	
+<div class="widget-search widget">
+	<form class="widget-search__form" role="search" method="get" action="https://google.com/search">
+		<label>
+			<input class="widget-search__field" type="search" placeholder="SEARCH..." value="" name="q">
+		</label>
+		<input class="widget-search__submit" type="submit" value="Search">
+		<input type="hidden" name="sitesearch" value="http://example.org/" />
+	</form>
+</div>
+	
+<div class="widget-recent widget">
+	<h4 class="widget__title">Recent Posts</h4>
+	<div class="widget__content">
+		<ul class="widget__list">
+			<li class="widget__item"><a class="widget__link" href="/post/bayes/">Demystifying Bayes&#39; Decision Rule</a></li>
+		</ul>
+	</div>
+</div>
+	
+<div class="widget-categories widget">
+	<h4 class="widget__title">Categories</h4>
+	<div class="widget__content">
+		<ul class="widget__list">
+			<li class="widget__item"><a class="widget__link" href="/categories/machine-learning">Machine learning</a></li>
+		</ul>
+	</div>
+</div>
+	
+<div class="widget-social widget">
+	<h4 class="widget-social__title widget__title">Social</h4>
+	<div class="widget-social__content widget__content">
+		<div class="widget-social__item widget__item">
+			<a class="widget-social__link widget__link btn" title="Twitter" rel="noopener noreferrer" href="https://twitter.com/anirudh_gupta12" target="_blank">
+				<svg class="widget-social__link-icon icon-twitter" viewBox="0 0 384 312" width="24" height="24" fill="#fff"><path d="m384 36.9c-14.1 6.3-29.3 10.5-45.2 12.4 16.3-9.7 28.8-25.2 34.6-43.6-15.2 9-32.1 15.6-50 19.1-14.4-15.2-34.9-24.8-57.5-24.8-43.5 0-78.8 35.3-78.8 78.8 0 6.2.7 12.2 2 17.9-65.5-3.3-123.5-34.6-162.4-82.3-6.7 11.6-10.6 25.2-10.6 39.6 0 27.3 13.9 51.4 35 65.6-12.9-.4-25.1-4-35.7-9.9v1c0 38.2 27.2 70 63.2 77.2-6.6 1.8-13.6 2.8-20.8 2.8-5.1 0-10-.5-14.8-1.4 10 31.3 39.1 54.1 73.6 54.7-27 21.1-60.9 33.7-97.8 33.7-6.4 0-12.6-.4-18.8-1.1 34.9 22.4 76.3 35.4 120.8 35.4 144.9 0 224.1-120 224.1-224.1 0-3.4-.1-6.8-.2-10.2 15.4-11.1 28.7-25 39.3-40.8z"/></svg>
+				<span>Twitter</span>
+			</a>
+		</div>
+	</div>
+</div>
+	
+<div class="widget-taglist widget">
+	<h4 class="widget__title">Tags</h4>
+	<div class="widget__content">
+		<a class="widget-taglist__link widget__link btn" href="/tags/classification" title="Classification">Classification</a>
+		<a class="widget-taglist__link widget__link btn" href="/tags/statistics" title="Statistics">Statistics</a>
+	</div>
+</div>
+</aside>
+	</div>
+		<footer class="footer">
+			<div class="container container-inner">
+				
+			</div>
+		</footer>
+	</div>
+
+<script>
+	var navigation = responsiveNav(".menu", {
+		navClass: "menu--collapse",
+	});
+</script>
+</body>
+</html>

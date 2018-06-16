@@ -2,7 +2,6 @@ baseURL = "https://agupta54.github.io"
 languageCode = "en-us"
 title = "Through the lens of mathematics"
 theme = "mainroad"
-disqusShortname = "disqus_l5sqC5oLSM"
 
 [Author]
     name = "Anirudh Gupta"

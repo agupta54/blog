@@ -19,6 +19,25 @@
 	{{ partial "authorbox.html" . }}
 	{{ partial "post_nav.html" . }}
 	{{ partial "comments.html" . }}
+	
+	<script>
+		var VUUKLE_CONFIG = {
+			apiKey: "796e13bf-84c7-4af8-bf04-0006e1884506",
+			articleId: "Bayes rule",
+			img: "Article image URL",
+			tags: "statistics, machine-learning",
+		};
+		// ⛔️ DON'T EDIT BELOW THIS LINE
+		(function() {
+			var d = document,
+				s = d.createElement('script');
+		   s.src = 'https://cdn.vuukle.com/platform.js';
+		  (d.head || d.body).appendChild(s);
+		})();
+	</script>
+	<div id='vuukle-comments'></div>
+	<div class='vuukle-powerbar'></div>
+
 </main>
 
 {{ partial "sidebar.html" . }}
